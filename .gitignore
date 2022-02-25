@@ -243,3 +243,5 @@ gradle-app.setting
 .classpath
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,macos,gradle,java,git
+
+./src/main/java/credentials/
