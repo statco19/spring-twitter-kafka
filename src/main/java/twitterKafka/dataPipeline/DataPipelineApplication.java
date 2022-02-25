@@ -11,8 +11,6 @@ import twitterKafka.twitter.producer.SpringProducerApplication;
 @RequiredArgsConstructor
 public class DataPipelineApplication{
 
-	private static final String TOPIC_NAME = "test";
-
 	private final KafkaTemplate<Integer, String> template;  // DI by RequiredArgsConstructor
 
 	public static void main(String[] args) {
