@@ -19,6 +19,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
@@ -80,7 +82,18 @@ public class SpringProducerApplication implements CommandLineRunner {
             }
             if (msg != null){
                 log.info(msg);
-                twitterKafkaTemplate.send(new ProducerRecord<>(TOPIC_NAME, null, msg));
+                twitterKafkaTemplate.send(new ProducerRecord<>(TOPIC_NAME, null, msg)).addCallback
+                (new ListenableFutureCallback<SendResult<String, String>>() {
+                     @Override
+                     public void onFailure(Throwable ex) {
+                         log.error(ex.getMessage(), ex);
+                     }
+
+                     @Override
+                     public void onSuccess(SendResult<String, String> result) {
+                         log.info(result.toString());
+                     }
+                });
             }
         }
         log.info("End of application");
