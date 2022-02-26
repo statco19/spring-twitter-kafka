@@ -47,11 +47,6 @@ public class SpringProducerApplication implements CommandLineRunner {
     ArrayList<Long> followings = Lists.newArrayList(TokenAndKey.MY_TWIITER_ID);
     ArrayList<String> terms = Lists.newArrayList("bts");
 
-    public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(SpringProducerApplication.class);
-        application.run(args);
-    }
-
     @Override
     public void run(String... args) {
 

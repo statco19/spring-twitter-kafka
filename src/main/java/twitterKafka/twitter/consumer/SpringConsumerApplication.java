@@ -10,11 +10,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 @Slf4j
 public class SpringConsumerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(SpringConsumerApplication.class);
-        application.run(args);
-    }
-
     @KafkaListener(topics = "test",
                 groupId = "test-group-01",
                 containerFactory = "customContainerFactory")
