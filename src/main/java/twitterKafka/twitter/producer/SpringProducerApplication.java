@@ -91,7 +91,7 @@ public class SpringProducerApplication implements CommandLineRunner {
 
                      @Override
                      public void onSuccess(SendResult<String, String> result) {
-                         log.info(result.toString());
+                         log.info("{}", result);
                      }
                 });
             }
