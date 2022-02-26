@@ -17,6 +17,7 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -45,6 +46,11 @@ public class SpringProducerApplication implements CommandLineRunner {
     //    ArrayList<Long> followings = Lists.newArrayList(44196397L);  //elon musk
     ArrayList<Long> followings = Lists.newArrayList(TokenAndKey.MY_TWIITER_ID);
     ArrayList<String> terms = Lists.newArrayList("bts");
+
+    public static void main(String[] args) {
+        SpringApplication application = new SpringApplication(SpringProducerApplication.class);
+        application.run(args);
+    }
 
     @Override
     public void run(String... args) {
