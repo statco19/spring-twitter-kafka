@@ -1,7 +1,6 @@
-package twitterKafka.twitter.producer;
+package twitterKafka.dataPipeline.kafka.producer;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;

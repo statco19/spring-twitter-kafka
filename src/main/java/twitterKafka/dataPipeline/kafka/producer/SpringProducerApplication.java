@@ -1,4 +1,4 @@
-package twitterKafka.twitter.producer;
+package twitterKafka.dataPipeline.kafka.producer;
 
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
@@ -18,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootApplication
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class SpringProducerApplication implements CommandLineRunner {

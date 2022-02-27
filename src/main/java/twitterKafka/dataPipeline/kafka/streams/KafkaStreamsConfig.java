@@ -1,26 +1,19 @@
-package twitterKafka.twitter.streams;
+package twitterKafka.dataPipeline.kafka.streams;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +21,6 @@ import java.util.Map;
 import static org.apache.kafka.streams.StreamsConfig.*;
 
 @Configuration
-@EnableKafka
 @EnableKafkaStreams
 @NoArgsConstructor
 @Slf4j
