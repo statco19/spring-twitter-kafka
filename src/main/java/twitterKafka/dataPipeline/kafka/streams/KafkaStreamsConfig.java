@@ -33,7 +33,6 @@ public class KafkaStreamsConfig {
 
     // A Gson instance in order to handle json objects from twitter
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//    public KafkaStreamsConfig() {}
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration KStreamsConfigs() {
@@ -47,22 +46,6 @@ public class KafkaStreamsConfig {
 
         return new KafkaStreamsConfiguration(props);
     }
-
-//    @Bean
-//    public StreamsBuilderFactoryBean streamsBuilderFactoryBean() {
-//
-//        Map<String, Object> props = new HashMap<>();
-//        props.put(APPLICATION_ID_CONFIG,APPLICATION_ID);
-//        props.put(BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-//        props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-//        props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-//        props.put(DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
-//
-//        KafkaStreamsConfiguration streamsConfig = new KafkaStreamsConfiguration(props);
-//        StreamsBuilderFactoryBean streamsBuilder = new StreamsBuilderFactoryBean(streamsConfig);
-////        streamsBuilder.setSingleton(Boolean.FALSE);
-//        return streamsBuilder;
-//    }
 
     @Bean
     public KStream<String, String> KStreamTruncated(StreamsBuilder streamsBuilder) {
@@ -106,13 +89,13 @@ public class KafkaStreamsConfig {
                 + extractFromTweet(gson, value, "created_at") + "\""
                 + ",\"text\":\""
                 + gson.fromJson(value, JsonElement.class)
-                .getAsJsonObject()
-                .get("extended_tweet")
-                .getAsJsonObject()
-                .get("full_text")
-                .getAsString()
-                .replace("\n", "\\n")
-                .replace("\"", "")
+                    .getAsJsonObject()
+                    .get("extended_tweet")
+                    .getAsJsonObject()
+                    .get("full_text")
+                    .getAsString()
+//                    .replace("\n", "")
+                    .replace("\"", "")
                 + "\"}";
         log.info("mvTruncated: {}", result);
         return result;
@@ -123,8 +106,8 @@ public class KafkaStreamsConfig {
                 + extractFromTweet(gson, value, "created_at") + "\""
                 + ",\"text\":\""
                 + extractFromTweet(gson, value, "text")
-                .replace("\n", "\\n")
-                .replace("\"", "")
+                    .replace("\n", "")
+                    .replace("\"", "")
                 + "\"}";
         log.info("mvNotTruncated: {}", result);
         return result;

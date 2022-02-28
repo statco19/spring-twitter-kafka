@@ -1,8 +1,9 @@
 package twitterKafka.dataPipeline.kafka.consumer.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -42,5 +43,39 @@ public class EsService {
         log.info(">>> bulk count = {}", indexRequests.length);
         restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
         log.info(">>> Successful data save with ES<<<");
+    }
+
+    public void bulk(ConsumerRecords<String, String> records) throws Exception {
+        BulkRequest bulkRequest = new BulkRequest();
+
+        Integer recordCount = records.count();
+        if(recordCount > 0) {
+            log.info("Received " + recordCount + " records");
+        }
+
+        for (ConsumerRecord<String, String> record : records){
+            try {
+                String id = record.topic() + "_" + record.partition() + "_" + record.offset();
+                log.info("id = {}", id);
+
+                IndexRequest indexRequest = new IndexRequest(INDEX_NAME)
+                        .source(record.value(), XContentType.JSON)
+                        .id(id); // this is to make our consumer idempotent
+
+                bulkRequest.add(indexRequest); // we add to our bulk request (takes no time)
+            } catch (NullPointerException e){
+                log.warn("skipping bad data: " + record.value());
+            }
+        }
+
+        if (recordCount > 0) {
+            restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+            log.info(">>> {} data have been processed.", recordCount);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

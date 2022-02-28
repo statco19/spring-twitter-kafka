@@ -5,14 +5,14 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
-import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ListenerContainerConfiguration {
 
+    @Autowired
+    private KafkaTemplate<String, String> template;  // injected for handling error while consuming records
+
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> customContainerFactory() {
 
@@ -34,12 +37,17 @@ public class ListenerContainerConfiguration {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // disable auto commit of offsets
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100"); // disable auto commit of offsets
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100");
 
         DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(props);
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-//        factory.setConcurrency(3);
+        factory.setConcurrency(3);  // 3 consumers
+        // batch mode
+        factory.setBatchListener(true);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
+        // manual commit mode
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         factory.getContainerProperties().setConsumerRebalanceListener(new ConsumerAwareRebalanceListener() {
             @Override
             public void onPartitionsRevokedBeforeCommit(Consumer<?, ?> consumer, Collection<TopicPartition> partitions) {
@@ -65,13 +73,16 @@ public class ListenerContainerConfiguration {
                 log.info("onPartitionsLost - partitions: {}", formatPartitions(partitions));
             }
         });
-
-        factory.setBatchListener(true);
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
         factory.setConsumerFactory(cf);
+
+        // handling error while consuming records in a batch
+        factory.setCommonErrorHandler(new DefaultErrorHandler(new DeadLetterPublishingRecoverer(
+                template
+        )));
 
         return factory;
     }
+
 
     private static List<String> formatPartitions(Collection<TopicPartition> partitions) {
         return partitions.stream().map(topicPartition ->

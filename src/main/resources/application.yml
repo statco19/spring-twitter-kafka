@@ -9,6 +9,7 @@ spring:
       bootstrap-servers: localhost:9092
     listener:
       type: BATCH
+      AckMode: MANUAL_IMMEDIATE
     streams:
       application-id: streams-filter-application
       bootstrap-servers: localhost:9092
