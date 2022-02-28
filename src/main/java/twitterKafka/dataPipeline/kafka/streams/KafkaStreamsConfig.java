@@ -94,7 +94,7 @@ public class KafkaStreamsConfig {
                     .getAsJsonObject()
                     .get("full_text")
                     .getAsString()
-//                    .replace("\n", "")
+                    .replace("\n", "")
                     .replace("\"", "")
                 + "\"}";
         log.info("mvTruncated: {}", result);

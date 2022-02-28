@@ -5,6 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -31,34 +36,35 @@ public class SpringConsumerApplication {
     @Autowired
     private KafkaTemplate<String, String> template;  // injected for handling error while consuming records
 
-//    @KafkaListener(topics = "test",
-//                groupId = "test-group-01",
-//                properties = {"auto.offset.reset:earliest"},
-//                concurrency = "3"
-//                )
-//    public void customListener(ConsumerRecords<String, String> records,
-//                               Acknowledgment ack) throws IOException {
-//        records.forEach(record -> log.info("record: {}", record));
-//        ack.acknowledge();  // manual commit
-//    }
+    @KafkaListener(topics = "test-destination",
+                groupId = "test-group-01",
+                containerFactory = "customContainerFactory",
+                properties = {"auto.offset.reset:earliest"},
+                concurrency = "3"
+                )
+    public void customListener(ConsumerRecords<String, String> records,
+                               Acknowledgment ack) throws Exception {
 
-
-    @KafkaListener(topics = "offset-error-test",
-                    groupId = "test-group-01",
-                    containerFactory = "customContainerFactory",
-                    properties = {"auto.offset.reset:earliest"},
-                    concurrency = "3")
-    public void testListener(ConsumerRecords<String, String> records,
-                             Acknowledgment ack) throws Exception {
-        for (ConsumerRecord<String, String> record : records) {
-            if(record.value().startsWith("error")) {
-                throw new BatchListenerFailedException("error thrown",record);
-            } else {
-                log.info("{}", record);
-                ack.acknowledge();
-            }
-        }
+        esKafkaService.bulk(records);
+        ack.acknowledge();  // manual commit
     }
+
+
+//    @KafkaListener(topics = "test",
+//                    groupId = "test-group-10",
+//                    properties = {"auto.offset.reset:earliest"},
+//                    concurrency = "3")
+//    public void testListener(ConsumerRecords<String, String> records,
+//                             Acknowledgment ack) throws Exception {
+//        for (ConsumerRecord<String, String> record : records) {
+//            if(record.value().startsWith("error")) {
+//                throw new BatchListenerFailedException("error thrown",record);
+//            } else {
+//                log.info("{}", record);
+//                ack.acknowledge();
+//            }
+//        }
+//    }
 
     /**
      * Kafka Listener Container Factory for default Kafka Listener

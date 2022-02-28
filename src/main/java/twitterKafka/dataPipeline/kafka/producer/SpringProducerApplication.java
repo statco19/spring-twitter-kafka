@@ -44,7 +44,7 @@ public class SpringProducerApplication implements CommandLineRunner {
 
     //    ArrayList<Long> followings = Lists.newArrayList(44196397L);  //elon musk
     ArrayList<Long> followings = Lists.newArrayList(TokenAndKey.MY_TWIITER_ID);
-    ArrayList<String> terms = Lists.newArrayList("bts");
+    ArrayList<String> terms = Lists.newArrayList("spiderman");
 
     @Override
     public void run(String... args) {
