@@ -1,6 +1,9 @@
 # spring-twitter-kafka
 Spring project connecting twitter-kafka
 
+## Gameboard github link
+https://github.com/jjongwoo27/gameboard_v2
+
 # Data Pipeline
 ![Slide2](https://user-images.githubusercontent.com/71916314/157577965-2658bf6e-8bd0-4eef-95fd-e0e585a9aa1d.jpeg)
 
